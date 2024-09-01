@@ -1,7 +1,7 @@
 {
   "name": "crystal-clear-comments",
   "displayName": "Crystal Clear Comments",
-  "description": "",
+  "description": "Analyzes code comments and provides metrics and insights.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.92.0"
@@ -9,15 +9,25 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:extension.analyzeComments"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "crystal-clear-comments.helloWorld",
-        "title": "Hello World"
+        "command": "extension.analyzeComments",
+        "title": "Analyze Comments"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "commentAnalyzerView",
+          "name": "Comment Analyzer"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
