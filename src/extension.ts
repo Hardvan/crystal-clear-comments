@@ -20,12 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
             .writeFile(reportFile, Buffer.from(generateReport(commentData)))
             .then(
               () => {
-                // Get the language ID of the active document
-                const languageId = document.languageId;
-
                 vscode.window.showInformationMessage(
-                  "Comment analysis complete! Report generated for " +
-                    languageId
+                  "Comment analysis complete! Report generated at comment-report.md"
                 );
               },
               (err) => {

@@ -4,7 +4,6 @@ export class CommentAnalyzer {
   static analyze(document: vscode.TextDocument): { [line: number]: string[] } {
     const commentData: { [line: number]: string[] } = {};
     const languageId = document.languageId;
-    console.log(`Detected language: ${languageId}`);
 
     for (let i = 0; i < document.lineCount; i++) {
       const line = document.lineAt(i);
@@ -24,7 +23,7 @@ export class CommentAnalyzer {
     const trimmedText = text.trim();
 
     // Notify about language id detection in vscode notification
-    vscode.window.showInformationMessage("Detected language: " + languageId);
+    vscode.window.showInformationMessage(`Detected language ID: ${languageId}`);
 
     switch (languageId) {
       case "cpp":
