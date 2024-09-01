@@ -5,5 +5,5 @@ def add(a, b):
 
 # Main function
 if __name__ == '__main__':
-    # Example Usage
+    # Example Usage to add two numbers
     print(add(1, 2))
