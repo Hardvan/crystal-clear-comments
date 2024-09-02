@@ -422,6 +422,11 @@ function generateReport(
         });
       </script>
     </div>
+
+    <!-- Footer -->
+    <footer style="text-align: center; margin-top: 20px; font-size: 0.8em;">
+      <p>&copy; ${new Date().getFullYear()} Crystal Clear Comments - Hardvan</p>
+    </footer>
   </body>
   </html>`;
 
