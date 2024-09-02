@@ -214,7 +214,7 @@ function generateReport(
         color: #fff;
         text-align: center;
         line-height: 16px;
-        font-weight: bold;
+        font-size: 12px;
         cursor: pointer;
         position: relative;
       }
