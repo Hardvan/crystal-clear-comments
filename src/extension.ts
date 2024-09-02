@@ -14,7 +14,8 @@ export function activate(context: vscode.ExtensionContext) {
         const document = editor.document;
 
         // Analyze comments in the document using the CommentAnalyzer class.
-        const commentData = CommentAnalyzer.analyze(document);
+        const { commentData, totalComments } =
+          CommentAnalyzer.analyze(document);
 
         // Check if there are any workspace folders open.
         if (vscode.workspace.workspaceFolders) {
@@ -29,7 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
 
           // Write the analysis report to the report file.
           vscode.workspace.fs
-            .writeFile(reportFile, Buffer.from(generateReport(commentData)))
+            .writeFile(
+              reportFile,
+              Buffer.from(generateReport(commentData, totalComments))
+            )
             .then(
               () => {
                 // Show a success message when the report is successfully written.
@@ -56,18 +60,20 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-// This function generates an HTML report from the comment data.
-function generateReport(commentData: { [line: number]: string[] }): string {
-  const totalLines = Object.keys(commentData).length;
+function getAvgCommentLength(commentData: { [line: number]: string[] }) {
   const totalComments = Object.values(commentData).flat().length;
-  const commentCoverage =
-    totalLines > 0 ? (totalComments / totalLines) * 100 : 0;
-  const avgCommentLength =
-    totalComments > 0
-      ? Object.values(commentData)
-          .flat()
-          .reduce((sum, comment) => sum + comment.length, 0) / totalComments
-      : 0;
+  const totalLength = Object.values(commentData)
+    .flat()
+    .reduce((acc, comment) => acc + comment.length, 0);
+  return totalLength / totalComments;
+}
+
+// This function generates an HTML report from the comment data.
+function generateReport(
+  commentData: { [line: number]: string[] },
+  totalComments: number
+): string {
+  const avgCommentLength = getAvgCommentLength(commentData);
 
   let report = `
   <html>
@@ -101,9 +107,7 @@ function generateReport(commentData: { [line: number]: string[] }): string {
 
     <div class="metrics">
       <h2>Comment Coverage Analysis</h2>
-      <p><strong>Total Lines:</strong> ${totalLines}</p>
       <p><strong>Total Comments:</strong> ${totalComments}</p>
-      <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%</p>
       <!-- Placeholder for comment distribution visualization -->
       <div class="chart">
         <p><em>Comment distribution visualization will be added here.</em></p>
@@ -141,11 +145,12 @@ function generateReport(commentData: { [line: number]: string[] }): string {
       report += `
       <tr>
         <td>${parseInt(lineNumber) + 1}</td>
-        <td>${escapeHtml(comment)}</td>
+        <td>${comment}</td>
       </tr>`;
     });
   }
 
+  // Close the HTML tags.
   report += `
     </table>
   </body>
@@ -154,12 +159,5 @@ function generateReport(commentData: { [line: number]: string[] }): string {
   return report;
 }
 
-// Helper function to escape HTML special characters
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+// This function is called when the extension is deactivated.
+export function deactivate() {}
