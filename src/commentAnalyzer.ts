@@ -7,10 +7,6 @@ export class CommentAnalyzer {
     const commentData: { [line: number]: string[] } = {};
     const languageId = document.languageId;
 
-    if (languageId !== "cpp" && languageId !== "c") {
-      return commentData;
-    }
-
     let insideMultiLineComment = false;
     let buffer = "";
     let startLine = 0;
@@ -23,13 +19,62 @@ export class CommentAnalyzer {
       while (j < line.length) {
         const char = line[j];
 
-        if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
-          const nextChar = line[j + 1];
+        if (languageId === "cpp" || languageId === "c") {
+          // Handle C/C++ single-line comments.
+          if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
+            const nextChar = line[j + 1];
 
-          // Detect start of single-line comment.
-          if (nextChar === "/") {
-            buffer = "//";
+            if (nextChar === "/") {
+              buffer = "//";
+              j += 2;
+              while (j < line.length && line[j] !== "\n") {
+                buffer += line[j];
+                j++;
+              }
+              if (!commentData[i]) {
+                commentData[i] = [];
+              }
+              commentData[i].push(buffer);
+              buffer = "";
+              break;
+            }
+
+            if (nextChar === "*") {
+              insideMultiLineComment = true;
+              buffer = "/*";
+              startLine = i;
+              j += 2;
+              continue;
+            }
+          }
+
+          if (
+            insideMultiLineComment &&
+            char === "*" &&
+            j + 1 < line.length &&
+            line[j + 1] === "/"
+          ) {
+            insideMultiLineComment = false;
+            buffer += "*/";
+            if (!commentData[startLine]) {
+              commentData[startLine] = [];
+            }
+            commentData[startLine].push(buffer);
+            buffer = "";
             j += 2;
+            continue;
+          }
+
+          if (insideMultiLineComment) {
+            buffer += char;
+          }
+
+          j++;
+        } else if (languageId === "python" || languageId === "py") {
+          // Handle Python single-line comments.
+          if (!insideMultiLineComment && char === "#") {
+            buffer = "#";
+            j++;
             while (j < line.length && line[j] !== "\n") {
               buffer += line[j];
               j++;
@@ -42,40 +87,38 @@ export class CommentAnalyzer {
             break;
           }
 
-          // Detect start of multi-line comment.
-          if (nextChar === "*") {
+          // Handle Python multi-line comments (triple quotes).
+          if (
+            !insideMultiLineComment &&
+            (line.startsWith("'''") || line.startsWith('"""'))
+          ) {
             insideMultiLineComment = true;
-            buffer = "/*";
+            buffer = line[j] + line[j + 1] + line[j + 2];
             startLine = i;
-            j += 2;
+            j += 3;
             continue;
           }
-        }
 
-        // Detect end of multi-line comment.
-        if (
-          insideMultiLineComment &&
-          char === "*" &&
-          j + 1 < line.length &&
-          line[j + 1] === "/"
-        ) {
-          insideMultiLineComment = false;
-          buffer += "*/";
-          if (!commentData[startLine]) {
-            commentData[startLine] = [];
+          if (
+            insideMultiLineComment &&
+            (line.includes("'''") || line.includes('"""'))
+          ) {
+            insideMultiLineComment = false;
+            buffer += line.slice(j);
+            if (!commentData[startLine]) {
+              commentData[startLine] = [];
+            }
+            commentData[startLine].push(buffer);
+            buffer = "";
+            break;
           }
-          commentData[startLine].push(buffer);
-          buffer = "";
-          j += 2;
-          continue;
-        }
 
-        // Add characters to buffer if inside a multi-line comment.
-        if (insideMultiLineComment) {
-          buffer += char;
-        }
+          if (insideMultiLineComment) {
+            buffer += char;
+          }
 
-        j++;
+          j++;
+        }
       }
 
       // Handle a multi-line comment that spans multiple lines.
