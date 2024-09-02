@@ -10,11 +10,30 @@ export class CommentAnalyzer {
     totalLines: number;
     totalNormalLines: number;
     totalNonBlankLines: number;
+    languageDetected: string;
   } {
     const commentData: {
       [line: number]: { range: string; type: string; comments: string[] };
     } = {};
     const languageId = document.languageId;
+
+    let languageDetected;
+    switch (languageId) {
+      case "c":
+        languageDetected = "C";
+        break;
+      case "cpp":
+        languageDetected = "C++";
+        break;
+      case "python":
+        languageDetected = "Python";
+        break;
+      case "py":
+        languageDetected = "Python";
+        break;
+      default:
+        languageDetected = "Unknown Language";
+    }
 
     let insideMultiLineComment = false;
     let buffer = "";
@@ -180,6 +199,7 @@ export class CommentAnalyzer {
       totalLines,
       totalNormalLines,
       totalNonBlankLines,
+      languageDetected,
     };
   }
 }

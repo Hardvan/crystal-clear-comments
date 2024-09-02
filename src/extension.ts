@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
           totalLines,
           totalNormalLines,
           totalNonBlankLines,
+          languageDetected,
         } = CommentAnalyzer.analyze(document);
 
         // Calculate comment coverage as a percentage.
@@ -46,7 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
                   commentData,
                   totalComments,
                   totalLines,
-                  commentCoverage
+                  commentCoverage,
+                  languageDetected
                 )
               )
             )
@@ -119,7 +121,8 @@ function generateReport(
   },
   totalComments: number,
   totalLines: number,
-  commentCoverage: number
+  commentCoverage: number,
+  languageDetected: string
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
   const totalCommentLines = getTotalCommentLines(commentData);
@@ -150,9 +153,13 @@ function generateReport(
   <html>
   <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts Poppins & Roboto -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Comment Analysis Report</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', sans-serif;
         margin: 0;
         padding: 0;
         background-color: #1e1e1e;
@@ -213,6 +220,7 @@ function generateReport(
 
       <div class="metrics">
         <h2>Comment Coverage Analysis</h2>
+        <p><strong>Language Detected:</strong> ${languageDetected}</p>
         <p><strong>Total Lines:</strong> ${totalLines}</p>
         <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
         <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
