@@ -260,7 +260,11 @@ function generateReport(
 
       <div class="metrics">
         <h2>Comment Coverage Analysis</h2>
-        <p><strong>Language Detected:</strong> ${languageDetected}</p>
+        <p>
+          <strong>Language Detected:</strong> ${languageDetected}
+          <span class="info-icon">i
+            <span class="tooltip">Currently supported languages: C, C++, Python, Javascript, Java</span>
+        </p>
         <p><strong>Total Lines:</strong> ${totalLines}</p>
         <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
         <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>

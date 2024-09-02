@@ -26,10 +26,14 @@ export class CommentAnalyzer {
         languageDetected = "C++";
         break;
       case "python":
-        languageDetected = "Python";
-        break;
       case "py":
         languageDetected = "Python";
+        break;
+      case "javascript":
+        languageDetected = "JavaScript";
+        break;
+      case "java":
+        languageDetected = "Java";
         break;
       default:
         languageDetected = "Unknown Language";
@@ -59,7 +63,12 @@ export class CommentAnalyzer {
       while (j < line.length) {
         const char = line[j];
 
-        if (languageId === "cpp" || languageId === "c") {
+        if (
+          languageId === "cpp" ||
+          languageId === "c" ||
+          languageId === "java" ||
+          languageId === "javascript"
+        ) {
           if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
             const nextChar = line[j + 1];
 
