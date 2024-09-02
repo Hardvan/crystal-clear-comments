@@ -8,6 +8,11 @@ int add(int a, int b)
     return a + b;
 }
 
+/*
+This is a multi-line comment
+A multi-line comment can span multiple lines
+*/
+
 // Main function
 int main()
 {
