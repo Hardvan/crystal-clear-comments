@@ -56,18 +56,57 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-// This function generates a markdown report from the comment data.
+// This function generates an HTML report from the comment data.
 function generateReport(commentData: { [line: number]: string[] }): string {
-  let report = "# Comment Analysis Report\n\n";
-  report += "| Line # | Comment |\n";
-  report += "|--------|---------|\n";
+  let report = `
+  <html>
+  <head>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Comment Analysis Report</h1>
+    <table>
+      <tr>
+        <th>Line #</th>
+        <th>Comment</th>
+      </tr>`;
 
   // Iterate over the comment data and add it to the report.
   for (const [lineNumber, comments] of Object.entries(commentData)) {
     comments.forEach((comment) => {
-      report += `| ${parseInt(lineNumber) + 1} | ${comment} |\n`;
+      // Add each line and comment to the table.
+      report += `
+      <tr>
+        <td>${parseInt(lineNumber) + 1}</td>
+        <td>${escapeHtml(comment)}</td>
+      </tr>`;
     });
   }
 
+  report += `
+    </table>
+  </body>
+  </html>`;
+
   return report;
+}
+
+// Helper function to escape HTML special characters
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
