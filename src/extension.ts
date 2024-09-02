@@ -204,9 +204,49 @@ function generateReport(
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       }
-      .note {
-        font-size: 0.8em;
-        color: #b0b0b0;
+      .info-icon {
+        display: inline-block;
+        margin-left: 5px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        line-height: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        position: relative;
+      }
+      .info-icon:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+      .tooltip {
+        visibility: hidden;
+        width: 200px;
+        background-color: #333;
+        color: #fff;
+        text-align: left;
+        border-radius: 6px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; /* Position above the icon */
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%; /* At the bottom of the tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
       }
       .comment-details {
         margin-top: 80px;
@@ -224,15 +264,18 @@ function generateReport(
         <p><strong>Total Lines:</strong> ${totalLines}</p>
         <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
         <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
-        <p><strong>Total Normal Lines:</strong> ${
-          totalLines - totalCommentLines
-        }</p>
-        <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%</p>
-        <p class="note">Note:</p>
-        <ul class="note">
-          <li>Comment coverage is the % of lines that are comments out of the total non-blank lines.</li>
-          <li>Normal lines are lines that are not comments or empty, i.e., lines with code or text.</li>
-        </ul>
+        <p>
+          <strong>Total Normal Lines:</strong> ${totalLines - totalCommentLines}
+          <span class="info-icon">i
+            <span class="tooltip">Normal lines are lines that are not comments or empty, i.e., lines with code or text.</span>
+          </span>
+        </p>
+        <p>
+          <strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%
+          <span class="info-icon">i
+            <span class="tooltip">Comment coverage is the % of lines that are comments out of the total non-blank lines.</span>
+          </span>
+        </p>
       </div>
 
       <div class="charts">
