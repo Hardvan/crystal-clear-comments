@@ -212,3 +212,46 @@ export class CommentAnalyzer {
     };
   }
 }
+
+export function getHeatmapData(
+  commentData: {
+    [line: number]: { range: string; type: string; comments: string[] };
+  },
+  totalLines: number
+) {
+  const heatmapData = new Array(totalLines).fill(0);
+  for (const line in commentData) {
+    heatmapData[parseInt(line)] = 1; // Mark the line as having a comment
+  }
+  return heatmapData;
+}
+
+export function getHistogramData(commentData: {
+  [line: number]: { range: string; type: string; comments: string[] };
+}) {
+  const histogramData: number[] = [];
+  for (const line in commentData) {
+    for (const comment of commentData[line].comments) {
+      histogramData.push(comment.length);
+    }
+  }
+  return histogramData;
+}
+
+export function getWordCloudData(commentData: {
+  [line: number]: { range: string; type: string; comments: string[] };
+}) {
+  const wordCounts: { [word: string]: number } = {};
+  for (const line in commentData) {
+    for (const comment of commentData[line].comments) {
+      const words = comment.split(/\s+/);
+      for (const word of words) {
+        const cleanedWord = word.replace(/[^a-zA-Z]/g, "").toLowerCase();
+        if (cleanedWord) {
+          wordCounts[cleanedWord] = (wordCounts[cleanedWord] || 0) + 1;
+        }
+      }
+    }
+  }
+  return wordCounts;
+}

@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { CommentAnalyzer } from "./commentAnalyzer";
+import {
+  CommentAnalyzer,
+  getHeatmapData,
+  getHistogramData,
+  getWordCloudData,
+} from "./commentAnalyzer";
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext) {
@@ -149,10 +154,23 @@ function generateReport(
     }
   }
 
+  const heatmapData = getHeatmapData(commentData, totalLines);
+  const histogramData = getHistogramData(commentData);
+  const wordCloudData = getWordCloudData(commentData);
+
+  // Convert word cloud data to a format usable by the frontend
+  const wordCloudArray = Object.entries(wordCloudData).map(([word, count]) => ({
+    text: word,
+    weight: count,
+  }));
+
   let report = `
   <html>
   <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jqcloud2"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jqcloud2/dist/jqcloud.min.css">
     <!-- Google Fonts Poppins & Roboto -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -293,6 +311,14 @@ function generateReport(
         </div>
       </div>
 
+      <div class="charts">
+        <canvas id="commentHeatmap" class="chart"></canvas>
+        <canvas id="commentHistogram" class="chart"></canvas>
+      </div>
+      <div class="charts">
+        <div id="wordCloud" class="chart"></div>
+      </div>
+
       <h2 class="comment-details">Comment Details</h2>
       <table>
         <thead>
@@ -377,6 +403,56 @@ function generateReport(
               }
             }
           }
+        });
+
+        const heatmapCtx = document.getElementById('commentHeatmap').getContext('2d');
+        new Chart(heatmapCtx, {
+          type: 'bar',
+          data: {
+            labels: ${JSON.stringify(commentLengthLabels)},
+            datasets: [{
+              label: 'Comment Density Heatmap',
+              data: ${JSON.stringify(heatmapData)},
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              x: { beginAtZero: true },
+              y: { beginAtZero: true }
+            }
+          }
+        });
+
+        const histogramCtx = document.getElementById('commentHistogram').getContext('2d');
+        new Chart(histogramCtx, {
+          type: 'bar',
+          data: {
+            labels: Array.from({ length: ${
+              Math.max(...histogramData) + 1
+            } }, (_, i) => i.toString()),
+            datasets: [{
+              label: 'Comment Length Histogram',
+              data: ${JSON.stringify(histogramData)},
+              backgroundColor: 'rgba(153, 102, 255, 0.6)',
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              x: { beginAtZero: true },
+              y: { beginAtZero: true }
+            }
+          }
+        });
+
+        $('#wordCloud').jQCloud(${JSON.stringify(wordCloudArray)}, {
+          autoResize: true,
+          colors: ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56"],
+          fontSize: { from: 0.05, to: 0.02 }
         });
       </script>
     </div>
