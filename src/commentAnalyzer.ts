@@ -7,53 +7,83 @@ export class CommentAnalyzer {
     const commentData: { [line: number]: string[] } = {};
     const languageId = document.languageId;
 
+    if (languageId !== "cpp" && languageId !== "c") {
+      return commentData;
+    }
+
+    let insideMultiLineComment = false;
+    let buffer = "";
+    let startLine = 0;
+
     // Iterate through each line of the document.
     for (let i = 0; i < document.lineCount; i++) {
-      const line = document.lineAt(i);
+      const line = document.lineAt(i).text;
+      let j = 0;
 
-      // Check if the line contains a comment based on the language ID.
-      if (this.isCommentLine(line.text, languageId)) {
-        // Initialize the entry for the line if it does not exist.
-        if (!commentData[i]) {
-          commentData[i] = [];
+      while (j < line.length) {
+        const char = line[j];
+
+        if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
+          const nextChar = line[j + 1];
+
+          // Detect start of single-line comment.
+          if (nextChar === "/") {
+            buffer = "//";
+            j += 2;
+            while (j < line.length && line[j] !== "\n") {
+              buffer += line[j];
+              j++;
+            }
+            if (!commentData[i]) {
+              commentData[i] = [];
+            }
+            commentData[i].push(buffer);
+            buffer = "";
+            break;
+          }
+
+          // Detect start of multi-line comment.
+          if (nextChar === "*") {
+            insideMultiLineComment = true;
+            buffer = "/*";
+            startLine = i;
+            j += 2;
+            continue;
+          }
         }
-        // Add the comment to the corresponding line number.
-        commentData[i].push(line.text.trim());
+
+        // Detect end of multi-line comment.
+        if (
+          insideMultiLineComment &&
+          char === "*" &&
+          j + 1 < line.length &&
+          line[j + 1] === "/"
+        ) {
+          insideMultiLineComment = false;
+          buffer += "*/";
+          if (!commentData[startLine]) {
+            commentData[startLine] = [];
+          }
+          commentData[startLine].push(buffer);
+          buffer = "";
+          j += 2;
+          continue;
+        }
+
+        // Add characters to buffer if inside a multi-line comment.
+        if (insideMultiLineComment) {
+          buffer += char;
+        }
+
+        j++;
+      }
+
+      // Handle a multi-line comment that spans multiple lines.
+      if (insideMultiLineComment) {
+        buffer += "\n";
       }
     }
 
     return commentData;
-  }
-
-  // Determine if a line of text is a comment based on the language ID.
-  private static isCommentLine(text: string, languageId: string): boolean {
-    const trimmedText = text.trim();
-
-    // Notify about detected language ID for debugging purposes.
-    vscode.window.showInformationMessage(`Detected language ID: ${languageId}`);
-
-    // Check if the line is a comment based on the language ID.
-    switch (languageId) {
-      case "cpp":
-      case "c":
-        // C++ and C comments: single-line (//) and multi-line (/* ... */).
-        return (
-          trimmedText.startsWith("//") ||
-          trimmedText.startsWith("/*") ||
-          trimmedText.endsWith("*/")
-        );
-      case "python":
-      case "py":
-        // Python comments: single-line (#) and multi-line docstrings (''' ... ''' or """ ... """).
-        // Check for single-line comments.
-        if (trimmedText.startsWith("#")) {
-          return true;
-        }
-        // Check for multi-line docstrings.
-        return trimmedText.includes("'''") || trimmedText.includes('"""');
-      default:
-        // Return false if the language is not supported.
-        return false;
-    }
   }
 }
