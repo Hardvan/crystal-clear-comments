@@ -14,8 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
         const document = editor.document;
 
         // Analyze comments in the document using the CommentAnalyzer class.
-        const { commentData, totalComments } =
+        const { commentData, totalComments, totalNormalLines } =
           CommentAnalyzer.analyze(document);
+
+        // Calculate comment coverage as a percentage.
+        const commentCoverage =
+          totalNormalLines > 0 ? (totalComments / totalNormalLines) * 100 : 0;
 
         // Check if there are any workspace folders open.
         if (vscode.workspace.workspaceFolders) {
@@ -32,7 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.workspace.fs
             .writeFile(
               reportFile,
-              Buffer.from(generateReport(commentData, totalComments))
+              Buffer.from(
+                generateReport(commentData, totalComments, commentCoverage)
+              )
             )
             .then(
               () => {
@@ -71,13 +77,15 @@ function getAvgCommentLength(commentData: { [line: number]: string[] }) {
 // This function generates an HTML report from the comment data.
 function generateReport(
   commentData: { [line: number]: string[] },
-  totalComments: number
+  totalComments: number,
+  commentCoverage: number
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
 
   let report = `
   <html>
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       table {
         width: 100%;
@@ -108,53 +116,107 @@ function generateReport(
     <div class="metrics">
       <h2>Comment Coverage Analysis</h2>
       <p><strong>Total Comments:</strong> ${totalComments}</p>
-      <!-- Placeholder for comment distribution visualization -->
-      <div class="chart">
-        <p><em>Comment distribution visualization will be added here.</em></p>
-      </div>
-    </div>
-
-    <div class="metrics">
-      <h2>Comment Quality Assessment</h2>
-      <p><strong>Average Comment Length:</strong> ${avgCommentLength.toFixed(
+      <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(
         2
-      )} characters</p>
-      <!-- Placeholder for comment quality metrics -->
-      <p><em>Additional comment quality metrics will be added here.</em></p>
+      )}% of normal lines</p>
+      <canvas id="commentDistributionChart"></canvas>
     </div>
 
     <div class="metrics">
       <h2>Comment Density Visualization</h2>
-      <!-- Placeholder for comment density heat map or chart -->
-      <div class="chart">
-        <p><em>Comment density heat map will be added here.</em></p>
-      </div>
+      <p><strong>Average Comment Length:</strong> ${avgCommentLength.toFixed(
+        2
+      )} characters</p>
+      <canvas id="commentLengthChart"></canvas>
     </div>
 
-    <h2>Comments by Line</h2>
+    <h2>Comment Details</h2>
     <table>
-      <tr>
-        <th>Line #</th>
-        <th>Comment</th>
-      </tr>`;
+      <thead>
+        <tr>
+          <th>Line Number</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>`;
 
-  // Iterate over the comment data and add it to the report.
-  for (const [lineNumber, comments] of Object.entries(commentData)) {
-    comments.forEach((comment) => {
-      // Add each line and comment to the table.
-      report += `
-      <tr>
-        <td>${parseInt(lineNumber) + 1}</td>
-        <td>${comment}</td>
-      </tr>`;
-    });
+  // Append each comment's line number and content to the report.
+  for (const line in commentData) {
+    report += `<tr><td>${parseInt(line) + 1}</td><td>${commentData[line].join(
+      "<br>"
+    )}</td></tr>`;
   }
 
-  // Close the HTML tags.
   report += `
+      </tbody>
     </table>
+
+    <script>
+      const commentData = ${JSON.stringify(commentData)};
+
+      // Prepare data for the comment distribution chart.
+      const commentDistributionLabels = Object.keys(commentData).map(
+        line => 'Line ' + (parseInt(line) + 1)
+      );
+      const commentDistributionData = Object.values(commentData).map(
+        comments => comments.length
+      );
+
+      // Render the comment distribution chart.
+      new Chart(document.getElementById('commentDistributionChart'), {
+        type: 'bar',
+        data: {
+          labels: commentDistributionLabels,
+          datasets: [{
+            label: 'Number of Comments',
+            data: commentDistributionData,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Prepare data for the comment length chart.
+      const commentLengthLabels = Object.keys(commentData).map(
+        line => 'Line ' + (parseInt(line) + 1)
+      );
+      const commentLengthData = Object.values(commentData).map(
+        comments => comments.reduce((acc, comment) => acc + comment.length, 0) / comments.length
+      );
+
+      // Render the comment length chart.
+      new Chart(document.getElementById('commentLengthChart'), {
+        type: 'line',
+        data: {
+          labels: commentLengthLabels,
+          datasets: [{
+            label: 'Average Comment Length',
+            data: commentLengthData,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    </script>
   </body>
-  </html>`;
+  </html>
+  `;
 
   return report;
 }

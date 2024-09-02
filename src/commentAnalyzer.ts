@@ -3,10 +3,12 @@ import * as vscode from "vscode";
 // The CommentAnalyzer class provides methods to analyze comments in code documents.
 export class CommentAnalyzer {
   // Analyze comments in the given document and return a mapping of line numbers to comments,
-  // along with the total number of comments and the total number of comment lines.
+  // along with the total number of comments and the total number of normal (non-blank, non-comment) lines.
   static analyze(document: vscode.TextDocument): {
     commentData: { [line: number]: string[] };
     totalComments: number;
+    totalLines: number;
+    totalNormalLines: number;
   } {
     const commentData: { [line: number]: string[] } = {};
     const languageId = document.languageId;
@@ -15,10 +17,19 @@ export class CommentAnalyzer {
     let buffer = "";
     let startLine = 0;
     let totalComments = 0;
+    let totalLines = 0;
+    let totalNormalLines = 0;
 
     // Iterate through each line of the document.
     for (let i = 0; i < document.lineCount; i++) {
-      const line = document.lineAt(i).text;
+      const line = document.lineAt(i).text.trim();
+      totalLines++;
+
+      if (line === "") {
+        continue; // Skip blank lines
+      }
+
+      let isCommentLine = false;
       let j = 0;
 
       while (j < line.length) {
@@ -44,6 +55,7 @@ export class CommentAnalyzer {
               commentData[i].push(buffer);
               totalComments++;
               buffer = "";
+              isCommentLine = true;
               break;
             }
 
@@ -53,6 +65,7 @@ export class CommentAnalyzer {
               buffer = "/*";
               startLine = i;
               j += 2;
+              isCommentLine = true;
               continue;
             }
           }
@@ -72,6 +85,7 @@ export class CommentAnalyzer {
             commentData[startLine].push(buffer);
             totalComments++;
             buffer = "";
+            isCommentLine = true;
             j += 2;
             continue;
           }
@@ -97,6 +111,7 @@ export class CommentAnalyzer {
             commentData[i].push(buffer);
             totalComments++;
             buffer = "";
+            isCommentLine = true;
             break;
           }
 
@@ -110,6 +125,7 @@ export class CommentAnalyzer {
             buffer = line[j] + line[j + 1] + line[j + 2];
             startLine = i;
             j += 3;
+            isCommentLine = true;
             continue;
           }
 
@@ -126,6 +142,7 @@ export class CommentAnalyzer {
             commentData[startLine].push(buffer);
             totalComments++;
             buffer = "";
+            isCommentLine = true;
             break;
           }
 
@@ -137,12 +154,17 @@ export class CommentAnalyzer {
         }
       }
 
+      // If the line is not a comment, count it as a normal line.
+      if (!isCommentLine && !insideMultiLineComment) {
+        totalNormalLines++;
+      }
+
       // Handle a multi-line comment that spans multiple lines.
       if (insideMultiLineComment) {
         buffer += "\n";
       }
     }
 
-    return { commentData, totalComments };
+    return { commentData, totalComments, totalLines, totalNormalLines };
   }
 }
