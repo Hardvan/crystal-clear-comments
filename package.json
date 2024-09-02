@@ -1,7 +1,7 @@
 {
   "name": "crystal-clear-comments",
   "displayName": "Crystal Clear Comments",
-  "description": "Analyzes code comments and provides metrics and insights.",
+  "description": "A VSCode extension designed to help developers gain insights into the quality & quantity of comments in their code. This extension analyzes comments in C, C++, Python, JavaScript and Java files, providing metrics & visualizations to enhance code documentation practices.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.92.0"
