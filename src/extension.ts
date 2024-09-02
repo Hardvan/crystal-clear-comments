@@ -140,60 +140,86 @@ function generateReport(
   <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+      h1, h2 {
+        color: #444;
+      }
+      .container {
+        width: 90%;
+        margin: auto;
+        padding: 20px;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 20px;
       }
       th, td {
-        border: 1px solid black;
-        padding: 8px;
+        border: 1px solid #ddd;
+        padding: 10px;
         text-align: left;
       }
-      h2 {
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 5px;
+      th {
+        background-color: #f2f2f2;
       }
-      .metrics {
-        margin-bottom: 20px;
+      .charts {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
       }
       .chart {
-        width: 100%;
-        height: 200px;
-        border: 1px solid #ccc;
+        flex: 1;
+        min-width: 0;
+        height: 400px;
+      }
+      .metrics {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
     </style>
   </head>
   <body>
-    <h1>Comment Analysis Report</h1>
+    <div class="container">
+      <h1>Comment Analysis Report</h1>
 
-    <div class="metrics">
-      <h2>Comment Coverage Analysis</h2>
-      <p><strong>Total Comments:</strong> ${totalComments}</p>
-      <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
-      <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(
-        2
-      )}% of normal lines</p>
-      <canvas id="commentDistributionChart"></canvas>
-    </div>
+      <div class="metrics">
+        <h2>Comment Coverage Analysis</h2>
+        <p><strong>Total Comments:</strong> ${totalComments}</p>
+        <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
+        <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(
+          2
+        )}% of normal lines</p>
+      </div>
 
-    <div class="metrics">
-      <h2>Comment Density Visualization</h2>
-      <p><strong>Average Comment Length:</strong> ${avgCommentLength.toFixed(
-        2
-      )} characters</p>
-      <canvas id="commentLengthChart"></canvas>
-    </div>
+      <div class="charts">
+        <div class="chart">
+          <h2>No. of Comments</h2>
+          <canvas id="commentDistributionChart"></canvas>
+        </div>
+        <div class="chart">
+          <h2>Average Comment Length</h2>
+          <canvas id="commentLengthChart"></canvas>
+        </div>
+      </div>
 
-    <h2>Comment Details</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Line Range</th>
-          <th>Comment Type</th>
-          <th>Comments</th>
-        </tr>
-      </thead>
-      <tbody>`;
+      <h2>Comment Details</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Line Range</th>
+            <th>Comment Type</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody>`;
 
   for (const line in commentData) {
     const { range, type, comments } = commentData[line];
@@ -203,58 +229,59 @@ function generateReport(
   }
 
   report += `
-      </tbody>
-    </table>
+        </tbody>
+      </table>
 
-    <script>
-      const commentData = ${JSON.stringify(commentData)};
+      <script>
+        const commentData = ${JSON.stringify(commentData)};
 
-      // Chart for Comment Distribution
-      new Chart(document.getElementById('commentDistributionChart'), {
-        type: 'bar',
-        data: {
-          labels: Object.keys(commentData).map(line => 'Line ' + (parseInt(line) + 1)),
-          datasets: [{
-            label: 'Number of Comments',
-            data: Object.values(commentData).map(
-              comments => comments.comments.length
-            ),
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
+        // Chart for Comment Distribution
+        new Chart(document.getElementById('commentDistributionChart'), {
+          type: 'bar',
+          data: {
+            labels: Object.keys(commentData).map(line => 'Line ' + (parseInt(line) + 1)),
+            datasets: [{
+              label: 'Number of Comments',
+              data: Object.values(commentData).map(
+                comments => comments.comments.length
+              ),
+              backgroundColor: 'rgba(54, 162, 235, 0.6)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
             }
           }
-        }
-      });
+        });
 
-      // Chart for Comment Length
-      new Chart(document.getElementById('commentLengthChart'), {
-        type: 'line',
-        data: {
-          labels: ${JSON.stringify(commentLengthLabels)},
-          datasets: [{
-            label: 'Average Comment Length',
-            data: ${JSON.stringify(commentLengthData)},
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
+        // Chart for Comment Length
+        new Chart(document.getElementById('commentLengthChart'), {
+          type: 'line',
+          data: {
+            labels: ${JSON.stringify(commentLengthLabels)},
+            datasets: [{
+              label: 'Average Comment Length',
+              data: ${JSON.stringify(commentLengthData)},
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
             }
           }
-        }
-      });
-    </script>
+        });
+      </script>
+    </div>
   </body>
   </html>`;
 
