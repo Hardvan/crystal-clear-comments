@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
         const document = editor.document;
 
         // Analyze comments in the document using the CommentAnalyzer class.
-        const { commentData, totalComments, totalNormalLines } =
+        const { commentData, totalComments, totalLines, totalNormalLines } =
           CommentAnalyzer.analyze(document);
 
         // Calculate comment coverage as a percentage.
@@ -37,7 +37,12 @@ export function activate(context: vscode.ExtensionContext) {
             .writeFile(
               reportFile,
               Buffer.from(
-                generateReport(commentData, totalComments, commentCoverage)
+                generateReport(
+                  commentData,
+                  totalComments,
+                  totalLines,
+                  commentCoverage
+                )
               )
             )
             .then(
@@ -108,10 +113,27 @@ function generateReport(
     [line: number]: { range: string; type: string; comments: string[] };
   },
   totalComments: number,
+  totalLines: number,
   commentCoverage: number
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
   const totalCommentLines = getTotalCommentLines(commentData);
+
+  // Initialize arrays for chart data
+  const commentLengthLabels: string[] = [];
+  const commentLengthData: number[] = new Array(totalLines).fill(0);
+
+  // Populate commentLengthData and commentLengthLabels
+  for (let i = 0; i < totalLines; i++) {
+    commentLengthLabels.push(`Line ${i + 1}`);
+    if (commentData[i]) {
+      commentLengthData[i] =
+        commentData[i].comments.reduce(
+          (acc, comment) => acc + comment.length,
+          0
+        ) / commentData[i].comments.length;
+    }
+  }
 
   let report = `
   <html>
@@ -187,20 +209,16 @@ function generateReport(
     <script>
       const commentData = ${JSON.stringify(commentData)};
 
-      const commentDistributionLabels = Object.keys(commentData).map(
-        line => 'Line ' + (parseInt(line) + 1)
-      );
-      const commentDistributionData = Object.values(commentData).map(
-        comments => comments.comments.length
-      );
-
+      // Chart for Comment Distribution
       new Chart(document.getElementById('commentDistributionChart'), {
         type: 'bar',
         data: {
-          labels: commentDistributionLabels,
+          labels: Object.keys(commentData).map(line => 'Line ' + (parseInt(line) + 1)),
           datasets: [{
             label: 'Number of Comments',
-            data: commentDistributionData,
+            data: Object.values(commentData).map(
+              comments => comments.comments.length
+            ),
             backgroundColor: 'rgba(54, 162, 235, 0.6)',
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1
@@ -215,20 +233,14 @@ function generateReport(
         }
       });
 
-      const commentLengthLabels = Object.keys(commentData).map(
-        line => 'Line ' + (parseInt(line) + 1)
-      );
-      const commentLengthData = Object.values(commentData).map(
-        comments => comments.comments.reduce((acc, comment) => acc + comment.length, 0) / comments.comments.length
-      );
-
+      // Chart for Comment Length
       new Chart(document.getElementById('commentLengthChart'), {
         type: 'line',
         data: {
-          labels: commentLengthLabels,
+          labels: ${JSON.stringify(commentLengthLabels)},
           datasets: [{
             label: 'Average Comment Length',
-            data: commentLengthData,
+            data: ${JSON.stringify(commentLengthData)},
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1

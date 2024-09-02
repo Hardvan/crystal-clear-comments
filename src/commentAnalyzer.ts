@@ -19,8 +19,8 @@ export class CommentAnalyzer {
     let buffer = "";
     let startLine = 0;
     let totalComments = 0;
-    let totalLines = 0;
-    let totalNormalLines = 0;
+    let totalLines = 0; // Total lines in the document.
+    let totalNormalLines = 0; // Lines that are not comments or empty.
 
     for (let i = 0; i < document.lineCount; i++) {
       const line = document.lineAt(i).text.trim();
