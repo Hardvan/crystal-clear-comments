@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
               () => {
                 // Show a success message when the report is successfully written.
                 vscode.window.showInformationMessage(
-                  "Comment analysis complete! Report generated at comment-report.md"
+                  "Comment analysis complete! Report generated at comment-report.html"
                 );
               },
               (err) => {
