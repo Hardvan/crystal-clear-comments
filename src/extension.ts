@@ -1,10 +1,5 @@
 import * as vscode from "vscode";
-import {
-  CommentAnalyzer,
-  getHeatmapData,
-  getHistogramData,
-  getWordCloudData,
-} from "./commentAnalyzer";
+import { CommentAnalyzer, getWordCloudData } from "./commentAnalyzer";
 
 // This function is called when the extension is activated.
 export function activate(context: vscode.ExtensionContext) {
@@ -154,8 +149,6 @@ function generateReport(
     }
   }
 
-  const heatmapData = getHeatmapData(commentData, totalLines);
-  const histogramData = getHistogramData(commentData);
   const wordCloudData = getWordCloudData(commentData);
 
   // Convert word cloud data to a format usable by the frontend
@@ -185,6 +178,10 @@ function generateReport(
       }
       h1, h2 {
         color: #e0e0e0;
+      }
+      .title {
+        text-align: center;
+        margin-top: 20px;
       }
       .container {
         width: 90%;
@@ -270,14 +267,21 @@ function generateReport(
         margin-top: 80px;
         text-align: center;
       }
+      .word-cloud {
+        margin-top: 60px;
+        text-align: center;
+      }
+      .word-cloud strong {
+        font-size: 24px;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Comment Analysis Report</h1>
+      <h1 class="title">Comment Analysis Report</h1>
 
       <div class="metrics">
-        <h2>Comment Coverage Analysis</h2>
         <p>
           <strong>Language Detected:</strong> ${languageDetected}
           <span class="info-icon">i
@@ -301,21 +305,26 @@ function generateReport(
       </div>
 
       <div class="charts">
+        <!-- Comment Types Distribution Chart -->
         <div class="chart">
           <h2>Comment Types Distribution</h2>
           <canvas id="commentTypesChart"></canvas>
         </div>
+        <!-- Comment Length Chart -->
         <div class="chart">
           <h2>Comment Length (in characters)</h2>
           <canvas id="commentLengthChart"></canvas>
         </div>
       </div>
 
-      <div class="charts">
-        <canvas id="commentHeatmap" class="chart"></canvas>
-        <canvas id="commentHistogram" class="chart"></canvas>
-      </div>
-      <div class="charts">
+      <!-- Word Cloud -->
+      <div class="word-cloud">
+        <p>
+          <strong>Word Cloud</strong>
+          <span class="info-icon">i
+            <span class="tooltip">A word cloud is a visual representation of the most common words. The size of the word indicates its frequency.</span>
+          </span>
+        </p>
         <div id="wordCloud" class="chart"></div>
       </div>
 
@@ -405,50 +414,7 @@ function generateReport(
           }
         });
 
-        const heatmapCtx = document.getElementById('commentHeatmap').getContext('2d');
-        new Chart(heatmapCtx, {
-          type: 'bar',
-          data: {
-            labels: ${JSON.stringify(commentLengthLabels)},
-            datasets: [{
-              label: 'Comment Density Heatmap',
-              data: ${JSON.stringify(heatmapData)},
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              x: { beginAtZero: true },
-              y: { beginAtZero: true }
-            }
-          }
-        });
-
-        const histogramCtx = document.getElementById('commentHistogram').getContext('2d');
-        new Chart(histogramCtx, {
-          type: 'bar',
-          data: {
-            labels: Array.from({ length: ${
-              Math.max(...histogramData) + 1
-            } }, (_, i) => i.toString()),
-            datasets: [{
-              label: 'Comment Length Histogram',
-              data: ${JSON.stringify(histogramData)},
-              backgroundColor: 'rgba(153, 102, 255, 0.6)',
-              borderColor: 'rgba(153, 102, 255, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              x: { beginAtZero: true },
-              y: { beginAtZero: true }
-            }
-          }
-        });
-
+        // Word Cloud
         $('#wordCloud').jQCloud(${JSON.stringify(wordCloudArray)}, {
           autoResize: true,
           colors: ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56"],

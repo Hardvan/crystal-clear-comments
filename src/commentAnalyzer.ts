@@ -213,31 +213,6 @@ export class CommentAnalyzer {
   }
 }
 
-export function getHeatmapData(
-  commentData: {
-    [line: number]: { range: string; type: string; comments: string[] };
-  },
-  totalLines: number
-) {
-  const heatmapData = new Array(totalLines).fill(0);
-  for (const line in commentData) {
-    heatmapData[parseInt(line)] = 1; // Mark the line as having a comment
-  }
-  return heatmapData;
-}
-
-export function getHistogramData(commentData: {
-  [line: number]: { range: string; type: string; comments: string[] };
-}) {
-  const histogramData: number[] = [];
-  for (const line in commentData) {
-    for (const comment of commentData[line].comments) {
-      histogramData.push(comment.length);
-    }
-  }
-  return histogramData;
-}
-
 export function getWordCloudData(commentData: {
   [line: number]: { range: string; type: string; comments: string[] };
 }) {
