@@ -155,11 +155,11 @@ function generateReport(
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f4f4f4;
-        color: #333;
+        background-color: #1e1e1e;
+        color: #e0e0e0;
       }
       h1, h2 {
-        color: #444;
+        color: #e0e0e0;
       }
       .container {
         width: 90%;
@@ -172,12 +172,12 @@ function generateReport(
         margin-top: 20px;
       }
       th, td {
-        border: 1px solid #ddd;
+        border: 1px solid #444;
         padding: 10px;
         text-align: left;
       }
       th {
-        background-color: #f2f2f2;
+        background-color: #333;
       }
       .charts {
         display: flex;
@@ -192,14 +192,14 @@ function generateReport(
         margin-bottom: 20px;
       }
       .metrics {
-        background-color: #fff;
+        background-color: #2c2c2c;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       }
       .note {
         font-size: 0.8em;
-        color: #777;
+        color: #b0b0b0;
       }
       .comment-details {
         margin-top: 80px;
