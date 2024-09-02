@@ -230,7 +230,7 @@ function generateReport(
           <canvas id="commentTypesChart"></canvas>
         </div>
         <div class="chart">
-          <h2>Average Comment Length</h2>
+          <h2>Comment Length (in characters)</h2>
           <canvas id="commentLengthChart"></canvas>
         </div>
       </div>
@@ -284,7 +284,7 @@ function generateReport(
           data: {
             labels: ${JSON.stringify(commentLengthLabels)},
             datasets: [{
-              label: 'Average Comment Length',
+              label: 'Comment Length',
               data: ${JSON.stringify(commentLengthData)},
               backgroundColor: 'rgba(75, 192, 192, 0.6)',
               borderColor: 'rgba(75, 192, 192, 1)',
