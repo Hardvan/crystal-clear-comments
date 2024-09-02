@@ -21,6 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
           totalNormalLines,
           totalNonBlankLines,
           languageDetected,
+          inputFileContents,
+          inputFileExtension,
         } = CommentAnalyzer.analyze(document);
 
         // Calculate comment coverage as a percentage.
@@ -48,7 +50,9 @@ export function activate(context: vscode.ExtensionContext) {
                   totalComments,
                   totalLines,
                   commentCoverage,
-                  languageDetected
+                  languageDetected,
+                  inputFileContents,
+                  inputFileExtension
                 )
               )
             )
@@ -122,7 +126,9 @@ function generateReport(
   totalComments: number,
   totalLines: number,
   commentCoverage: number,
-  languageDetected: string
+  languageDetected: string,
+  inputFileContents: string,
+  inputFileExtension: string
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
   const totalCommentLines = getTotalCommentLines(commentData);
@@ -182,6 +188,9 @@ function generateReport(
       .title {
         text-align: center;
         margin-top: 20px;
+      }
+      ::-webkit-scrollbar {
+        display: none;
       }
       .container {
         width: 90%;

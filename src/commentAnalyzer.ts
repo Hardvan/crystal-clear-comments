@@ -11,6 +11,8 @@ export class CommentAnalyzer {
     totalNormalLines: number;
     totalNonBlankLines: number;
     languageDetected: string;
+    inputFileContents: string;
+    inputFileExtension: string;
   } {
     const commentData: {
       [line: number]: { range: string; type: string; comments: string[] };
@@ -202,6 +204,10 @@ export class CommentAnalyzer {
       }
     }
 
+    // Original contents of the input file.
+    let inputFileContents = document.getText();
+    let inputFileExtension = getInputFileExtension(languageId);
+
     return {
       commentData,
       totalComments,
@@ -209,7 +215,27 @@ export class CommentAnalyzer {
       totalNormalLines,
       totalNonBlankLines,
       languageDetected,
+      inputFileContents,
+      inputFileExtension,
     };
+  }
+}
+
+function getInputFileExtension(languageId: string) {
+  switch (languageId) {
+    case "c":
+      return ".c";
+    case "cpp":
+      return ".cpp";
+    case "python":
+    case "py":
+      return ".py";
+    case "javascript":
+      return ".js";
+    case "java":
+      return ".java";
+    default:
+      return ".txt";
   }
 }
 
