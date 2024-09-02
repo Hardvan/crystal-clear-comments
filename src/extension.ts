@@ -187,7 +187,9 @@ function generateReport(
       .chart {
         flex: 1;
         min-width: 0;
-        height: 400px;
+        height: 300px;
+        margin-top: 20px;
+        margin-bottom: 20px;
       }
       .metrics {
         background-color: #fff;
@@ -199,6 +201,10 @@ function generateReport(
         font-size: 0.8em;
         color: #777;
       }
+      .comment-details {
+        margin-top: 80px;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -207,7 +213,7 @@ function generateReport(
 
       <div class="metrics">
         <h2>Comment Coverage Analysis</h2>
-        <p><strong>Total Lines:</strong> ${totalLines}</strong></p>
+        <p><strong>Total Lines:</strong> ${totalLines}</p>
         <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
         <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
         <p><strong>Total Normal Lines:</strong> ${
@@ -220,8 +226,8 @@ function generateReport(
 
       <div class="charts">
         <div class="chart">
-          <h2>No. of Comments</h2>
-          <canvas id="commentDistributionChart"></canvas>
+          <h2>Comment Types Distribution</h2>
+          <canvas id="commentTypesChart"></canvas>
         </div>
         <div class="chart">
           <h2>Average Comment Length</h2>
@@ -229,7 +235,7 @@ function generateReport(
         </div>
       </div>
 
-      <h2>Comment Details</h2>
+      <h2 class="comment-details">Comment Details</h2>
       <table>
         <thead>
           <tr>
@@ -254,27 +260,21 @@ function generateReport(
       <script>
         const commentData = ${JSON.stringify(commentData)};
 
-        // Chart for Comment Distribution
-        new Chart(document.getElementById('commentDistributionChart'), {
-          type: 'bar',
+        // Chart for Comment Types Distribution
+        new Chart(document.getElementById('commentTypesChart'), {
+          type: 'pie',
           data: {
-            labels: Object.keys(commentData).map(line => 'Line ' + (parseInt(line) + 1)),
+            labels: ['Single-line Comments', 'Multi-line Comments'],
             datasets: [{
-              label: 'Number of Comments',
-              data: Object.values(commentData).map(
-                comments => comments.comments.length
-              ),
-              backgroundColor: 'rgba(54, 162, 235, 0.6)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              label: 'Comment Types',
+              data: [${totalSingleLineComments}, ${totalMultiLineComments}],
+              backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(153, 102, 255, 1)'],
               borderWidth: 1
             }]
           },
           options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
+            responsive: true
           }
         });
 
