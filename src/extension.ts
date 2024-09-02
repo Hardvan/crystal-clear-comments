@@ -314,13 +314,19 @@ function generateReport(
               x: {
                 ticks: {
                   color: '#ffffff'
+                },
+                grid: {
+                  display: false // Hide the x-axis grid lines
                 }
               },
               y: {
                 ticks: {
                   color: '#ffffff'
                 },
-                beginAtZero: true
+                beginAtZero: true,
+                grid: {
+                  display: false // Hide the y-axis grid lines
+                }
               }
             }
           }
