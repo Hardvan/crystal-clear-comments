@@ -66,17 +66,28 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getAvgCommentLength(commentData: { [line: number]: string[] }) {
-  const totalComments = Object.values(commentData).flat().length;
-  const totalLength = Object.values(commentData)
-    .flat()
-    .reduce((acc, comment) => acc + comment.length, 0);
-  return totalLength / totalComments;
+function getAvgCommentLength(commentData: {
+  [line: number]: { range: string; type: string; comments: string[] };
+}) {
+  let totalLength = 0;
+  let totalComments = 0;
+
+  for (const line in commentData) {
+    const { comments } = commentData[line];
+    for (const comment of comments) {
+      totalLength += comment.length;
+      totalComments++;
+    }
+  }
+
+  return totalComments > 0 ? totalLength / totalComments : 0;
 }
 
 // This function generates an HTML report from the comment data.
 function generateReport(
-  commentData: { [line: number]: string[] },
+  commentData: {
+    [line: number]: { range: string; type: string; comments: string[] };
+  },
   totalComments: number,
   commentCoverage: number
 ): string {
@@ -134,15 +145,16 @@ function generateReport(
     <table>
       <thead>
         <tr>
-          <th>Line Number</th>
+          <th>Line Range</th>
+          <th>Comment Type</th>
           <th>Comments</th>
         </tr>
       </thead>
       <tbody>`;
 
-  // Append each comment's line number and content to the report.
   for (const line in commentData) {
-    report += `<tr><td>${parseInt(line) + 1}</td><td>${commentData[line].join(
+    const { range, type, comments } = commentData[line];
+    report += `<tr><td>${range}</td><td>${type}</td><td>${comments.join(
       "<br>"
     )}</td></tr>`;
   }
@@ -154,15 +166,13 @@ function generateReport(
     <script>
       const commentData = ${JSON.stringify(commentData)};
 
-      // Prepare data for the comment distribution chart.
       const commentDistributionLabels = Object.keys(commentData).map(
         line => 'Line ' + (parseInt(line) + 1)
       );
       const commentDistributionData = Object.values(commentData).map(
-        comments => comments.length
+        comments => comments.comments.length
       );
 
-      // Render the comment distribution chart.
       new Chart(document.getElementById('commentDistributionChart'), {
         type: 'bar',
         data: {
@@ -184,15 +194,13 @@ function generateReport(
         }
       });
 
-      // Prepare data for the comment length chart.
       const commentLengthLabels = Object.keys(commentData).map(
         line => 'Line ' + (parseInt(line) + 1)
       );
       const commentLengthData = Object.values(commentData).map(
-        comments => comments.reduce((acc, comment) => acc + comment.length, 0) / comments.length
+        comments => comments.comments.reduce((acc, comment) => acc + comment.length, 0) / comments.comments.length
       );
 
-      // Render the comment length chart.
       new Chart(document.getElementById('commentLengthChart'), {
         type: 'line',
         data: {
@@ -215,8 +223,7 @@ function generateReport(
       });
     </script>
   </body>
-  </html>
-  `;
+  </html>`;
 
   return report;
 }

@@ -2,15 +2,17 @@ import * as vscode from "vscode";
 
 // The CommentAnalyzer class provides methods to analyze comments in code documents.
 export class CommentAnalyzer {
-  // Analyze comments in the given document and return a mapping of line numbers to comments,
-  // along with the total number of comments and the total number of normal (non-blank, non-comment) lines.
   static analyze(document: vscode.TextDocument): {
-    commentData: { [line: number]: string[] };
+    commentData: {
+      [line: number]: { range: string; type: string; comments: string[] };
+    };
     totalComments: number;
     totalLines: number;
     totalNormalLines: number;
   } {
-    const commentData: { [line: number]: string[] } = {};
+    const commentData: {
+      [line: number]: { range: string; type: string; comments: string[] };
+    } = {};
     const languageId = document.languageId;
 
     let insideMultiLineComment = false;
@@ -20,13 +22,12 @@ export class CommentAnalyzer {
     let totalLines = 0;
     let totalNormalLines = 0;
 
-    // Iterate through each line of the document.
     for (let i = 0; i < document.lineCount; i++) {
       const line = document.lineAt(i).text.trim();
       totalLines++;
 
       if (line === "") {
-        continue; // Skip blank lines
+        continue;
       }
 
       let isCommentLine = false;
@@ -35,13 +36,10 @@ export class CommentAnalyzer {
       while (j < line.length) {
         const char = line[j];
 
-        // Handle C/C++ single-line comments.
         if (languageId === "cpp" || languageId === "c") {
-          // '/' detected
           if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
             const nextChar = line[j + 1];
 
-            // Single-line comment detected "//"
             if (nextChar === "/") {
               buffer = "//";
               j += 2;
@@ -50,16 +48,19 @@ export class CommentAnalyzer {
                 j++;
               }
               if (!commentData[i]) {
-                commentData[i] = [];
+                commentData[i] = {
+                  range: `${i + 1}`,
+                  type: "single-line",
+                  comments: [],
+                };
               }
-              commentData[i].push(buffer);
+              commentData[i].comments.push(buffer);
               totalComments++;
               buffer = "";
               isCommentLine = true;
               break;
             }
 
-            // Multi-line comment detected "/*"
             if (nextChar === "*") {
               insideMultiLineComment = true;
               buffer = "/*";
@@ -70,7 +71,6 @@ export class CommentAnalyzer {
             }
           }
 
-          // End of multi-line comment detected "*/"
           if (
             insideMultiLineComment &&
             char === "*" &&
@@ -80,9 +80,13 @@ export class CommentAnalyzer {
             insideMultiLineComment = false;
             buffer += "*/";
             if (!commentData[startLine]) {
-              commentData[startLine] = [];
+              commentData[startLine] = {
+                range: `${startLine + 1}-${i + 1}`,
+                type: "multi-line",
+                comments: [],
+              };
             }
-            commentData[startLine].push(buffer);
+            commentData[startLine].comments.push(buffer);
             totalComments++;
             buffer = "";
             isCommentLine = true;
@@ -96,8 +100,6 @@ export class CommentAnalyzer {
 
           j++;
         } else if (languageId === "python" || languageId === "py") {
-          // Handle Python single-line comments.
-          // '#' detected
           if (!insideMultiLineComment && char === "#") {
             buffer = "#";
             j++;
@@ -106,17 +108,19 @@ export class CommentAnalyzer {
               j++;
             }
             if (!commentData[i]) {
-              commentData[i] = [];
+              commentData[i] = {
+                range: `${i + 1}`,
+                type: "single-line",
+                comments: [],
+              };
             }
-            commentData[i].push(buffer);
+            commentData[i].comments.push(buffer);
             totalComments++;
             buffer = "";
             isCommentLine = true;
             break;
           }
 
-          // Handle Python multi-line comments (triple quotes).
-          // "'''" or '"""' detected
           if (
             !insideMultiLineComment &&
             (line.startsWith("'''") || line.startsWith('"""'))
@@ -129,7 +133,6 @@ export class CommentAnalyzer {
             continue;
           }
 
-          // End of multi-line comment detected "'''" or '"""'
           if (
             insideMultiLineComment &&
             (line.includes("'''") || line.includes('"""'))
@@ -137,9 +140,13 @@ export class CommentAnalyzer {
             insideMultiLineComment = false;
             buffer += line.slice(j);
             if (!commentData[startLine]) {
-              commentData[startLine] = [];
+              commentData[startLine] = {
+                range: `${startLine + 1}-${i + 1}`,
+                type: "multi-line",
+                comments: [],
+              };
             }
-            commentData[startLine].push(buffer);
+            commentData[startLine].comments.push(buffer);
             totalComments++;
             buffer = "";
             isCommentLine = true;
@@ -154,12 +161,10 @@ export class CommentAnalyzer {
         }
       }
 
-      // If the line is not a comment, count it as a normal line.
       if (!isCommentLine && !insideMultiLineComment) {
         totalNormalLines++;
       }
 
-      // Handle a multi-line comment that spans multiple lines.
       if (insideMultiLineComment) {
         buffer += "\n";
       }
