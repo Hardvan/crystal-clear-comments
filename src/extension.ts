@@ -163,6 +163,17 @@ function generateReport(
     weight: count,
   }));
 
+  // Map file extensions to Prism.js language classes
+  const languageClassMap: { [key: string]: string } = {
+    c: "language-c",
+    cpp: "language-cpp",
+    py: "language-python",
+    js: "language-javascript",
+    java: "language-java",
+  };
+
+  const languageClass = languageClassMap[inputFileExtension] || "language-text";
+
   let report = `
   <html>
   <head>
@@ -170,6 +181,9 @@ function generateReport(
     <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
     <script src="https://cdn.jsdelivr.net/npm/jqcloud2"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jqcloud2/dist/jqcloud.min.css">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/themes/prism.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
     <!-- Google Fonts Poppins & Roboto -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -284,6 +298,17 @@ function generateReport(
         font-size: 24px;
         text-align: center;
       }
+      .code-snippet {
+        background-color: #2c2c2c;
+        color: #e0e0e0;
+        padding: 20px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin-top: 40px;
+      }
+      pre {
+        margin: 0;
+      }
     </style>
   </head>
   <body>
@@ -358,6 +383,12 @@ function generateReport(
   report += `
         </tbody>
       </table>
+
+      <!-- Code Snippet -->
+      <div class="code-snippet">
+        <h2>Code Snippet from Input File</h2>
+        <pre><code class="${languageClass}">${inputFileContents}</code></pre>
+      </div>
 
       <script>
         const commentData = ${JSON.stringify(commentData)};
