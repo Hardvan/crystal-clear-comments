@@ -83,6 +83,25 @@ function getAvgCommentLength(commentData: {
   return totalComments > 0 ? totalLength / totalComments : 0;
 }
 
+function getTotalCommentLines(commentData: {
+  [line: number]: { range: string; type: string; comments: string[] };
+}) {
+  // Sum up the range values
+  // If '-' is present in the range, split the range and sum the values
+  // If '-' is not present, add 1 to the total
+  let total = 0;
+  for (const line in commentData) {
+    const range = commentData[line].range;
+    if (range.includes("-")) {
+      const [start, end] = range.split("-");
+      total += parseInt(end) - parseInt(start) + 1;
+    } else {
+      total++;
+    }
+  }
+  return total;
+}
+
 // This function generates an HTML report from the comment data.
 function generateReport(
   commentData: {
@@ -92,6 +111,7 @@ function generateReport(
   commentCoverage: number
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
+  const totalCommentLines = getTotalCommentLines(commentData);
 
   let report = `
   <html>
@@ -127,6 +147,7 @@ function generateReport(
     <div class="metrics">
       <h2>Comment Coverage Analysis</h2>
       <p><strong>Total Comments:</strong> ${totalComments}</p>
+      <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
       <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(
         2
       )}% of normal lines</p>
