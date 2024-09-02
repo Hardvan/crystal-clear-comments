@@ -1,71 +1,46 @@
-# crystal-clear-comments README
+# Crystal Clear Comments
 
-This is the README for your extension "crystal-clear-comments". After writing up a brief description, we recommend including the following sections.
+A VSCode extension designed to help developers gain insights into the quality and quantity of comments in their code. This extension analyzes comments in Python, C, and C++ files, providing metrics and visualizations to enhance code documentation practices.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Comment Coverage Analysis**: Calculates the percentage of lines that are comments out of the total non-blank lines.
+- **Language Detection**: Automatically detects the programming language (Python, C, C++) and tailors the analysis accordingly.
+- **Detailed Comment Breakdown**: Provides a breakdown of single-line and multi-line comments.
+- **Comment Length Analysis**: Analyzes the length of comments and visualizes it over the range of lines in the file.
+- **Interactive Report Generation**: Generates an HTML report with charts and tables summarizing the comment analysis.
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage (for Users)
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Open a Python, C, or C++ file in VSCode.
+2. Run the command `Analyze Comments` from the command palette (`Ctrl+Shift+P`).
+3. The extension will analyze the comments in the current file and generate a report.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Installation (for Dev/Contributors)
 
-## Requirements
+1. Clone this repository or download the latest release.
+2. Open the project in VSCode.
+3. Press `F5` to start debugging the extension.
+4. The extension will launch in a new VSCode window where you can test its functionality.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Example Report
 
-## Extension Settings
+The extension generates an HTML report with the following sections:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- **Comment Coverage Analysis**: Displays the percentage of comment lines, total comments, and total lines in the file.
+- **Charts**:
+  - _Comment Types Distribution_: A pie chart showing the distribution of single-line and multi-line comments.
+  - _Comment Length_: A line chart showing the length of comments across the file's lines.
+- **Comment Details**: A table listing each comment, its type (single-line or multi-line), and its location in the code.
 
-For example:
+## Contributing
 
-This extension contributes the following settings:
+Contributions are welcome! Please follow these steps:
 
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+1. Fork this repository.
+2. Clone your forked repository to your local machine.
+3. Create a new branch for your feature or bugfix.
+4. Make your changes & commit them with descriptive messages.
+5. Submit a pull request/merge request.
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Crystal Clear Comments** is designed to give developers clear insights into their code documentation, making it easier to maintain and understand codebases over time. Enjoy coding with crystal-clear clarity!
