@@ -285,7 +285,14 @@ function generateReport(
             }]
           },
           options: {
-            responsive: true
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#e0e0e0'
+                }
+              }
+            }
           }
         });
 
@@ -304,7 +311,15 @@ function generateReport(
           },
           options: {
             scales: {
+              x: {
+                ticks: {
+                  color: '#ffffff'
+                }
+              },
               y: {
+                ticks: {
+                  color: '#ffffff'
+                },
                 beginAtZero: true
               }
             }
