@@ -9,6 +9,7 @@ export class CommentAnalyzer {
     totalComments: number;
     totalLines: number;
     totalNormalLines: number;
+    totalNonBlankLines: number;
   } {
     const commentData: {
       [line: number]: { range: string; type: string; comments: string[] };
@@ -20,6 +21,7 @@ export class CommentAnalyzer {
     let startLine = 0;
     let totalComments = 0;
     let totalLines = 0; // Total lines in the document.
+    let totalNonBlankLines = 0; // Lines that are not empty.
     let totalNormalLines = 0; // Lines that are not comments or empty.
 
     for (let i = 0; i < document.lineCount; i++) {
@@ -29,6 +31,8 @@ export class CommentAnalyzer {
       if (line === "") {
         continue;
       }
+
+      totalNonBlankLines++;
 
       let isCommentLine = false;
       let j = 0;
@@ -170,6 +174,12 @@ export class CommentAnalyzer {
       }
     }
 
-    return { commentData, totalComments, totalLines, totalNormalLines };
+    return {
+      commentData,
+      totalComments,
+      totalLines,
+      totalNormalLines,
+      totalNonBlankLines,
+    };
   }
 }

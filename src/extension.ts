@@ -14,12 +14,17 @@ export function activate(context: vscode.ExtensionContext) {
         const document = editor.document;
 
         // Analyze comments in the document using the CommentAnalyzer class.
-        const { commentData, totalComments, totalLines, totalNormalLines } =
-          CommentAnalyzer.analyze(document);
+        const {
+          commentData,
+          totalComments,
+          totalLines,
+          totalNormalLines,
+          totalNonBlankLines,
+        } = CommentAnalyzer.analyze(document);
 
         // Calculate comment coverage as a percentage.
         const commentCoverage =
-          totalNormalLines > 0 ? (totalComments / totalNormalLines) * 100 : 0;
+          (100 * getTotalCommentLines(commentData)) / totalNonBlankLines;
 
         // Check if there are any workspace folders open.
         if (vscode.workspace.workspaceFolders) {
@@ -118,6 +123,12 @@ function generateReport(
 ): string {
   const avgCommentLength = getAvgCommentLength(commentData);
   const totalCommentLines = getTotalCommentLines(commentData);
+  const totalSingleLineComments = Object.values(commentData).filter(
+    (comment) => comment.type === "single-line"
+  ).length;
+  const totalMultiLineComments = Object.values(commentData).filter(
+    (comment) => comment.type === "multi-line"
+  ).length;
 
   // Initialize arrays for chart data
   const commentLengthLabels: string[] = [];
@@ -184,6 +195,10 @@ function generateReport(
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
+      .note {
+        font-size: 0.8em;
+        color: #777;
+      }
     </style>
   </head>
   <body>
@@ -192,11 +207,15 @@ function generateReport(
 
       <div class="metrics">
         <h2>Comment Coverage Analysis</h2>
-        <p><strong>Total Comments:</strong> ${totalComments}</p>
+        <p><strong>Total Lines:</strong> ${totalLines}</strong></p>
+        <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
         <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
-        <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(
-          2
-        )}% of normal lines</p>
+        <p><strong>Total Normal Lines:</strong> ${
+          totalLines - totalCommentLines
+        }</p>
+        <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%</p>
+        <p class="note">Comment coverage is the % of lines that are comments out of the total non-blank lines.</p>
+        <p class="note">Note: Normal lines are lines that are not comments or empty, i.e., lines with code or text.</p>
       </div>
 
       <div class="charts">
