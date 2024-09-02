@@ -1,4 +1,4 @@
-# Crystal Clear Comments
+# Crystal Clear Comments 🔮
 
 A VSCode extension designed to help developers gain insights into the quality and quantity of comments in their code. This extension analyzes comments in Python, C, and C++ files, providing metrics and visualizations to enhance code documentation practices.
 
