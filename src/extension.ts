@@ -228,8 +228,11 @@ function generateReport(
           totalLines - totalCommentLines
         }</p>
         <p><strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%</p>
-        <p class="note">Comment coverage is the % of lines that are comments out of the total non-blank lines.</p>
-        <p class="note">Note: Normal lines are lines that are not comments or empty, i.e., lines with code or text.</p>
+        <p class="note">Note:</p>
+        <ul class="note">
+          <li>Comment coverage is the % of lines that are comments out of the total non-blank lines.</li>
+          <li>Normal lines are lines that are not comments or empty, i.e., lines with code or text.</li>
+        </ul>
       </div>
 
       <div class="charts">
