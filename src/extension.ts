@@ -337,6 +337,20 @@ function generateReport(
       pre {
         margin: 0;
       }
+      .copy-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 18px;
+      }
+      .copy-icon:hover {
+        background-color: #555;
+      }
     </style>
   </head>
   <body>
@@ -417,10 +431,20 @@ function generateReport(
       <!-- Code Snippet -->
       <div class="code-snippet">
         <h2>Code Snippet from Input File</h2>
-        <pre><code class="${languageClass}">${inputFileContents}</code></pre>
+        <div style="position: relative;">
+          <pre><code class="${languageClass}">${inputFileContents}</code></pre>
+          <span class="copy-icon" onclick="copyCode()">&#128203;</span> <!-- Copy icon (📋) -->
+        </div>
       </div>
 
       <script>
+        function copyCode() {
+          const codeContent = document.querySelector('.code-snippet code').innerText;
+          navigator.clipboard.writeText(codeContent).then(() => {
+            alert('Code copied to clipboard!');
+          });
+        }
+
         const commentData = ${JSON.stringify(commentData)};
 
         // Chart for Comment Types Distribution
