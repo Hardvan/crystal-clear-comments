@@ -232,9 +232,8 @@ function generateReport(
       .chart {
         flex: 1;
         min-width: 0;
-        height: 300px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        width: 80%;
+        margin: 20px auto;
       }
       .metrics {
         background-color: #2c2c2c;
@@ -362,17 +361,10 @@ function generateReport(
         </div>
       </div>
 
-      <div class="charts">
-        <!-- Comment Types Distribution Chart -->
-        <div class="chart">
-          <h2>Comment Types Distribution</h2>
-          <canvas id="commentTypesChart"></canvas>
-        </div>
-        <!-- Comment Length Chart -->
-        <div class="chart">
-          <h2>Comment Length (in characters)</h2>
-          <canvas id="commentLengthChart"></canvas>
-        </div>
+      <!-- Comment Length Chart -->
+      <div class="chart">
+        <h2>Comment Length (in characters)</h2>
+        <canvas id="commentLengthChart"></canvas>
       </div>
 
       <!-- Word Cloud -->
