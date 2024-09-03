@@ -242,6 +242,19 @@ function generateReport(
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       }
+      .metrics-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .metrics-info {
+        flex: 1;
+      }
+      .metrics-chart {
+        flex: 1;
+        text-align: center;
+        height: 100%;
+      }
       .info-icon {
         display: inline-block;
         margin-left: 5px;
@@ -316,26 +329,35 @@ function generateReport(
       <h1 class="title">Comment Analysis Report</h1>
 
       <div class="metrics">
-        <p>
-          <strong>Language Detected:</strong> ${languageDetected}
-          <span class="info-icon">i
-            <span class="tooltip">Currently supported languages: C, C++, Python, Javascript, Java</span>
-        </p>
-        <p><strong>Total Lines:</strong> ${totalLines}</p>
-        <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
-        <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
-        <p>
-          <strong>Total Normal Lines:</strong> ${totalLines - totalCommentLines}
-          <span class="info-icon">i
-            <span class="tooltip">Normal lines are lines that are not comments or empty, i.e., lines with code or text.</span>
-          </span>
-        </p>
-        <p>
-          <strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%
-          <span class="info-icon">i
-            <span class="tooltip">Comment coverage is the % of lines that are comments out of the total non-blank lines.</span>
-          </span>
-        </p>
+        <div class="metrics-wrapper">
+          <div class="metrics-info">
+            <p>
+              <strong>Language Detected:</strong> ${languageDetected}
+              <span class="info-icon">i
+                <span class="tooltip">Currently supported languages: C, C++, Python, Javascript, Java</span>
+            </p>
+            <p><strong>Total Lines:</strong> ${totalLines}</p>
+            <p><strong>Total Comments:</strong> ${totalComments} (Single Line: ${totalSingleLineComments}, Multi Line: ${totalMultiLineComments})</p>
+            <p><strong>Total Comment Lines:</strong> ${totalCommentLines}</p>
+            <p>
+              <strong>Total Normal Lines:</strong> ${
+                totalLines - totalCommentLines
+              }
+              <span class="info-icon">i
+                <span class="tooltip">Normal lines are lines that are not comments or empty, i.e., lines with code or text.</span>
+              </span>
+            </p>
+            <p>
+              <strong>Comment Coverage:</strong> ${commentCoverage.toFixed(2)}%
+              <span class="info-icon">i
+                <span class="tooltip">Comment coverage is the % of lines that are comments out of the total non-blank lines.</span>
+              </span>
+            </p>
+          </div>
+          <div class="metrics-chart">
+            <canvas id="commentTypesChart"></canvas>
+          </div>
+        </div>
       </div>
 
       <div class="charts">
