@@ -199,6 +199,10 @@ function generateReport(
       h1, h2 {
         color: #e0e0e0;
       }
+      .line-chart {
+        text-align: center;
+        margin-top: 20px;
+      }
       .title {
         text-align: center;
         margin-top: 20px;
@@ -370,7 +374,7 @@ function generateReport(
 
       <!-- Comment Length Chart -->
       <div class="chart2">
-        <h2>Comment Length (in characters)</h2>
+        <h2 class="line-chart">Comment Length (in characters)</h2>
         <canvas id="commentLengthChart"></canvas>
       </div>
 
