@@ -250,9 +250,10 @@ function generateReport(
       .metrics-info {
         flex: 1;
         margin-left: 100px;
+        font-size: 20px;
       }
       .metrics-chart {
-        margin-right: 100px;
+        margin-right: 200px;
         text-align: center;
         height: 300px;
       }
