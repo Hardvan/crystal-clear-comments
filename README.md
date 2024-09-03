@@ -2,6 +2,12 @@
 
 A VSCode extension designed to help developers gain insights into the quality & quantity of comments in their code. This extension analyzes comments in C, C++, Python, JavaScript and Java files, providing metrics & visualizations to enhance code documentation practices.
 
+## Demonstration Video
+
+<a href="https://youtu.be/gSlA7xRId1c">
+    <img src="./images/thumbnail/thumbnail.png" alt="Crystal Clear Comments Demo" width="500"/>
+</a>
+
 ## Features
 
 - **Comment Coverage Analysis**: Calculates the percentage of lines that are comments out of the total non-blank lines.
