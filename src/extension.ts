@@ -235,6 +235,13 @@ function generateReport(
         width: 80%;
         margin: 20px auto;
       }
+      .chart2 {
+        flex: 1;
+        min-width: 0;
+        height: 300px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
       .metrics {
         background-color: #2c2c2c;
         padding: 20px;
@@ -362,7 +369,7 @@ function generateReport(
       </div>
 
       <!-- Comment Length Chart -->
-      <div class="chart">
+      <div class="chart2">
         <h2>Comment Length (in characters)</h2>
         <canvas id="commentLengthChart"></canvas>
       </div>
@@ -423,7 +430,7 @@ function generateReport(
             }]
           },
           options: {
-            responsive: true, 
+            responsive: true,
             plugins: {
               legend: {
                 labels: {
