@@ -145,7 +145,7 @@ function generateReport(
 
   // Populate commentLengthData and commentLengthLabels
   for (let i = 0; i < totalLines; i++) {
-    commentLengthLabels.push(`Line ${i + 1}`);
+    commentLengthLabels.push(`${i + 1}`);
     if (commentData[i]) {
       commentLengthData[i] =
         commentData[i].comments.reduce(
@@ -374,7 +374,7 @@ function generateReport(
 
       <!-- Comment Length Chart -->
       <div class="chart2">
-        <h2 class="line-chart">Comment Length (in characters)</h2>
+        <h2 class="line-chart">Comment Length Line Chart</h2>
         <canvas id="commentLengthChart"></canvas>
       </div>
 
@@ -461,6 +461,11 @@ function generateReport(
           options: {
             scales: {
               x: {
+                title: {
+                  display: true,
+                  text: 'Line #',
+                  color: '#ffffff'
+                },
                 ticks: {
                   color: '#ffffff'
                 },
@@ -469,6 +474,11 @@ function generateReport(
                 }
               },
               y: {
+                title: {
+                  display: true,
+                  text: 'No. of Characters',
+                  color: '#ffffff'
+                },
                 ticks: {
                   color: '#ffffff'
                 },
