@@ -249,11 +249,12 @@ function generateReport(
       }
       .metrics-info {
         flex: 1;
+        margin-left: 100px;
       }
       .metrics-chart {
-        flex: 1;
+        margin-right: 100px;
         text-align: center;
-        height: 100%;
+        height: 300px;
       }
       .info-icon {
         display: inline-block;
@@ -429,7 +430,7 @@ function generateReport(
             }]
           },
           options: {
-            responsive: true,
+            responsive: true, 
             plugins: {
               legend: {
                 labels: {
