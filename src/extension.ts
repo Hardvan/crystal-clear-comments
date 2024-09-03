@@ -430,7 +430,7 @@ function generateReport(
 
       <!-- Code Snippet -->
       <div class="code-snippet">
-        <h2>Code Snippet from Input File</h2>
+        <h2>Input File Code Snippet</h2>
         <div style="position: relative;">
           <pre><code class="${languageClass}">${inputFileContents}</code></pre>
           <span class="copy-icon" onclick="copyCode()">&#128203;</span> <!-- Copy icon (📋) -->
