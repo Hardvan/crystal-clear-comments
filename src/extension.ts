@@ -202,9 +202,11 @@ function generateReport(
       .line-chart {
         text-align: center;
         margin-top: 20px;
+        font-size: 28px;
       }
       .title {
         text-align: center;
+        font-size: 42px;
         margin-top: 20px;
       }
       ::-webkit-scrollbar {
@@ -314,13 +316,14 @@ function generateReport(
       .comment-details {
         margin-top: 80px;
         text-align: center;
+        font-size: 28px;
       }
       .word-cloud {
         margin-top: 100px;
         text-align: center;
       }
       .word-cloud strong {
-        font-size: 24px;
+        font-size: 28px;
         text-align: center;
       }
       .code-snippet {
@@ -395,7 +398,7 @@ function generateReport(
           <tr>
             <th>Line Range</th>
             <th>Comment Type</th>
-            <th>Comments</th>
+            <th>Content</th>
           </tr>
         </thead>
         <tbody>`;
