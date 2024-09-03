@@ -250,8 +250,8 @@ function generateReport(
       }
       .metrics-wrapper {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+        justify-content: center;
+        align-items: center;
       }
       .metrics-info {
         flex: 1;
