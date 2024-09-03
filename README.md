@@ -8,6 +8,11 @@ A VSCode extension designed to help developers gain insights into the quality & 
     <img src="./images/thumbnail/thumbnail.png" alt="Crystal Clear Comments Demo" width="500"/>
 </a>
 
+## Extension Links
+
+- [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=HardikPawar.crystal-clear-comments)
+- [GitHub Repository](https://github.com/Hardvan/crystal-clear-comments.git)
+
 ## Features
 
 - **Comment Coverage Analysis**: Calculates the percentage of lines that are comments out of the total non-blank lines.

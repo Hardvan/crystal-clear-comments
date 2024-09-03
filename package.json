@@ -3,7 +3,11 @@
   "publisher": "HardikPawar",
   "displayName": "Crystal Clear Comments",
   "description": "A VSCode extension designed to help developers gain insights into the quality & quantity of comments in their code. This extension analyzes comments in C, C++, Python, JavaScript and Java files, providing metrics & visualizations to enhance code documentation practices.",
-  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hardvan/crystal-clear-comments.git"
+  },
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.92.0"
   },
