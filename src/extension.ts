@@ -232,15 +232,15 @@ function generateReport(
       .chart {
         flex: 1;
         min-width: 0;
-        width: 80%;
-        margin: 20px auto;
+        height: 300px;
+        margin-top: 20px;
+        margin-bottom: 20px;
       }
       .chart2 {
         flex: 1;
         min-width: 0;
-        height: 300px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        width: 80%;
+        margin: 20px auto;
       }
       .metrics {
         background-color: #2c2c2c;
@@ -312,7 +312,7 @@ function generateReport(
         text-align: center;
       }
       .word-cloud {
-        margin-top: 60px;
+        margin-top: 100px;
         text-align: center;
       }
       .word-cloud strong {
