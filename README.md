@@ -85,4 +85,11 @@ Contributions are welcome! Please follow these steps:
 4. Make your changes & commit them with descriptive messages.
 5. Submit a pull request/merge request.
 
+## To Update the Project
+
+1. Make the necessary changes.
+2. Update the version number in the `package.json` file.
+3. Run `vsce package` to create a new `.vsix` file.
+4. Publish the new version to the VSCode Marketplace using the `vsce publish` command.
+
 **Crystal Clear Comments** is designed to give developers clear insights into their code documentation, making it easier to maintain and understand codebases over time. Enjoy coding with crystal-clear clarity!

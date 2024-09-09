@@ -6,48 +6,32 @@ export class CommentAnalyzer {
     commentData: {
       [line: number]: { range: string; type: string; comments: string[] };
     };
-    totalComments: number;
-    totalLines: number;
-    totalNormalLines: number;
-    totalNonBlankLines: number;
-    languageDetected: string;
-    inputFileContents: string;
-    inputFileExtension: string;
+    totalComments: number; // Total no. of comments in the document
+    totalLines: number; // Total no. of lines in the document
+    totalNormalLines: number; // Total no. of lines that are not comments or empty, i.e., code lines
+    totalNonBlankLines: number; // Total no. of lines that are not empty (code lines + comments)
+    languageDetected: string; // Language detected in the document(Eg: C, C++, Python, etc.)
+    inputFileContents: string; // Original contents of the input file
+    inputFileExtension: string; // Extension of the input file (Eg: .c, .cpp, .py, etc.)
   } {
+    // commentData is a dictionary that stores the comments in the document
     const commentData: {
       [line: number]: { range: string; type: string; comments: string[] };
     } = {};
+
+    // Get the languageId of the document
     const languageId = document.languageId;
 
-    let languageDetected;
-    switch (languageId) {
-      case "c":
-        languageDetected = "C";
-        break;
-      case "cpp":
-        languageDetected = "C++";
-        break;
-      case "python":
-      case "py":
-        languageDetected = "Python";
-        break;
-      case "javascript":
-        languageDetected = "JavaScript";
-        break;
-      case "java":
-        languageDetected = "Java";
-        break;
-      default:
-        languageDetected = "Unknown Language";
-    }
+    // Language detected in the document (C, C++, Python, etc.)
+    let languageDetected = getLanguageDetected(languageId);
 
     let insideMultiLineComment = false;
     let buffer = "";
     let startLine = 0;
     let totalComments = 0;
-    let totalLines = 0; // Total lines in the document.
-    let totalNonBlankLines = 0; // Lines that are not empty.
-    let totalNormalLines = 0; // Lines that are not comments or empty.
+    let totalLines = 0; // Total lines in the document
+    let totalNonBlankLines = 0; // Lines that are not empty
+    let totalNormalLines = 0; // Lines that are not comments or empty
 
     for (let i = 0; i < document.lineCount; i++) {
       const line = document.lineAt(i).text.trim();
@@ -65,15 +49,18 @@ export class CommentAnalyzer {
       while (j < line.length) {
         const char = line[j];
 
+        // Check for comments in C, C++, Java, JavaScript
         if (
-          languageId === "cpp" ||
           languageId === "c" ||
+          languageId === "cpp" ||
           languageId === "java" ||
           languageId === "javascript"
         ) {
+          // '/' detected
           if (!insideMultiLineComment && char === "/" && j + 1 < line.length) {
             const nextChar = line[j + 1];
 
+            // '//' detected, single line comment starts
             if (nextChar === "/") {
               buffer = "//";
               j += 2;
@@ -81,6 +68,7 @@ export class CommentAnalyzer {
                 buffer += line[j];
                 j++;
               }
+              // If no commentData for the line, create a new entry
               if (!commentData[i]) {
                 commentData[i] = {
                   range: `${i + 1}`,
@@ -95,6 +83,7 @@ export class CommentAnalyzer {
               break;
             }
 
+            // '/*' detected, multi-line comment starts
             if (nextChar === "*") {
               insideMultiLineComment = true;
               buffer = "/*";
@@ -105,6 +94,7 @@ export class CommentAnalyzer {
             }
           }
 
+          // '*/' detected, multi-line comment ends
           if (
             insideMultiLineComment &&
             char === "*" &&
@@ -128,12 +118,17 @@ export class CommentAnalyzer {
             continue;
           }
 
+          // Add the character to the buffer if inside a multi-line comment
           if (insideMultiLineComment) {
             buffer += char;
           }
 
           j++;
-        } else if (languageId === "python" || languageId === "py") {
+        }
+
+        // Check for comments in Python
+        else if (languageId === "python" || languageId === "py") {
+          // '#' detected
           if (!insideMultiLineComment && char === "#") {
             buffer = "#";
             j++;
@@ -155,6 +150,7 @@ export class CommentAnalyzer {
             break;
           }
 
+          // ''' or """ detected, multi-line comment starts
           if (
             !insideMultiLineComment &&
             (line.startsWith("'''") || line.startsWith('"""'))
@@ -166,13 +162,14 @@ export class CommentAnalyzer {
             isCommentLine = true;
             continue;
           }
-
+          // ''' or """ detected, multi-line comment ends
           if (
             insideMultiLineComment &&
             (line.includes("'''") || line.includes('"""'))
           ) {
             insideMultiLineComment = false;
             buffer += line.slice(j);
+            // If no commentData for the line, create a new entry
             if (!commentData[startLine]) {
               commentData[startLine] = {
                 range: `${startLine + 1}-${i + 1}`,
@@ -187,6 +184,7 @@ export class CommentAnalyzer {
             break;
           }
 
+          // Add the character to the buffer if inside a multi-line comment
           if (insideMultiLineComment) {
             buffer += char;
           }
@@ -195,17 +193,21 @@ export class CommentAnalyzer {
         }
       }
 
+      // If the line is not a comment line, increment totalNormalLines
       if (!isCommentLine && !insideMultiLineComment) {
         totalNormalLines++;
       }
 
+      // If inside a multi-line comment, add a newline character to the buffer
       if (insideMultiLineComment) {
         buffer += "\n";
       }
     }
 
-    // Original contents of the input file.
+    // Original contents of the input file
     let inputFileContents = document.getText();
+
+    // Extension of the input file (Eg: .c, .cpp, .py, etc.)
     let inputFileExtension = getInputFileExtension(languageId);
 
     return {
@@ -221,6 +223,27 @@ export class CommentAnalyzer {
   }
 }
 
+// Helper function to get the language detected in the document
+function getLanguageDetected(languageId: string) {
+  switch (languageId) {
+    case "c":
+      return "C";
+    case "cpp":
+      return "C++";
+    case "python":
+    case "py":
+      return "Python";
+    case "javascript":
+    case "js":
+      return "JavaScript";
+    case "java":
+      return "Java";
+    default:
+      return "Unknown Language";
+  }
+}
+
+// Helper function to get the extension of the input file
 function getInputFileExtension(languageId: string) {
   switch (languageId) {
     case "c":
@@ -239,6 +262,7 @@ function getInputFileExtension(languageId: string) {
   }
 }
 
+// Function to get the word cloud data from the comment data
 export function getWordCloudData(commentData: {
   [line: number]: { range: string; type: string; comments: string[] };
 }) {

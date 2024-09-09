@@ -1,19 +1,17 @@
 import * as vscode from "vscode";
 import { CommentAnalyzer, getWordCloudData } from "./commentAnalyzer";
 
-// This function is called when the extension is activated.
+// This function is called when the extension is activated
 export function activate(context: vscode.ExtensionContext) {
-  // Register the command "extension.analyzeComments" with VSCode.
+  // Register the command "extension.analyzeComments" with VSCode
   let disposable = vscode.commands.registerCommand(
     "extension.analyzeComments",
     () => {
-      // Get the active text editor.
-      const editor = vscode.window.activeTextEditor;
+      const editor = vscode.window.activeTextEditor; // Get the active text editor
       if (editor) {
-        // Get the document from the editor.
-        const document = editor.document;
+        const document = editor.document; // Get the document from the editor
 
-        // Analyze comments in the document using the CommentAnalyzer class.
+        // Analyze comments in the document using the CommentAnalyzer class's analyze method
         const {
           commentData,
           totalComments,
@@ -25,22 +23,24 @@ export function activate(context: vscode.ExtensionContext) {
           inputFileExtension,
         } = CommentAnalyzer.analyze(document);
 
-        // Calculate comment coverage as a percentage.
-        const commentCoverage =
-          (100 * getTotalCommentLines(commentData)) / totalNonBlankLines;
+        // Calculate comment coverage as a percentage
+        const commentCoverage = getCommentCodeCoverage(
+          commentData,
+          totalNonBlankLines
+        );
 
-        // Check if there are any workspace folders open.
+        // Check if there are any workspace folders open
         if (vscode.workspace.workspaceFolders) {
-          // Get the path of the first workspace folder.
+          // Get the path of the first workspace folder
           const workspaceFolder =
             vscode.workspace.workspaceFolders[0].uri.fsPath;
 
-          // Define the path for the report file.
+          // Define the path for the report file
           const reportFile = vscode.Uri.file(
             `${workspaceFolder}/comment-report.html`
           );
 
-          // Write the analysis report to the report file.
+          // Write the analysis report to the report file
           vscode.workspace.fs
             .writeFile(
               reportFile,
@@ -58,35 +58,47 @@ export function activate(context: vscode.ExtensionContext) {
             )
             .then(
               () => {
-                // Show a success message when the report is successfully written.
+                // Show a success message when the report is successfully written
                 vscode.window.showInformationMessage(
                   "Comment analysis complete! Report generated at comment-report.html"
                 );
               },
               (err) => {
-                // Show an error message if writing the report fails.
+                // Show an error message if writing the report fails
                 vscode.window.showErrorMessage(
                   `Failed to write report: ${err.message}`
                 );
               }
             );
         } else {
-          // Show an error message if no workspace folder is open.
+          // Show an error message if no workspace folder is open
           vscode.window.showErrorMessage("No workspace folder is open.");
         }
       }
     }
   );
 
-  // Add the command to the list of disposables so it can be cleaned up when the extension is deactivated.
+  // Add the command to the list of disposables so it can be cleaned up when the extension is deactivated
   context.subscriptions.push(disposable);
 }
 
+// Helper function to calculate the comment code coverage
+// Formula: (Total Comment Lines / Total Non-Blank Lines) * 100
+function getCommentCodeCoverage(
+  commentData: {
+    [line: number]: { range: string; type: string; comments: string[] };
+  },
+  totalNonBlankLines: number
+) {
+  return (100 * getTotalCommentLines(commentData)) / totalNonBlankLines;
+}
+
+// Helper function to calculate the average comment length
 function getAvgCommentLength(commentData: {
   [line: number]: { range: string; type: string; comments: string[] };
 }) {
-  let totalLength = 0;
-  let totalComments = 0;
+  let totalLength = 0; // Total length of all comments
+  let totalComments = 0; // Total no. of comments
 
   for (const line in commentData) {
     const { comments } = commentData[line];
@@ -99,6 +111,7 @@ function getAvgCommentLength(commentData: {
   return totalComments > 0 ? totalLength / totalComments : 0;
 }
 
+// Helper function to calculate the total comment lines
 function getTotalCommentLines(commentData: {
   [line: number]: { range: string; type: string; comments: string[] };
 }) {
@@ -118,7 +131,7 @@ function getTotalCommentLines(commentData: {
   return total;
 }
 
-// This function generates an HTML report from the comment data.
+// This function generates an HTML report from the comment data
 function generateReport(
   commentData: {
     [line: number]: { range: string; type: string; comments: string[] };
@@ -537,5 +550,5 @@ function generateReport(
   return report;
 }
 
-// This function is called when the extension is deactivated.
+// This function is called when the extension is deactivated
 export function deactivate() {}
